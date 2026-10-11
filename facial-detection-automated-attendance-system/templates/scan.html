@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Masuk | Coffee ID</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Karakter Utama Neobrutalism */
+        :root {
+            --stroke: #1a1c1e;
+            --bg-main: #f4f1ea;
+            --neo-blue: #3b82f6;
+            --neo-green: #22c55e;
+            --neo-red: #ef4444;
+            --neo-yellow: #facc15;
+            --neo-orange: #f97316;
+            --shadow-flat: 4px 4px 0px #1a1c1e;
+            --shadow-large: 8px 8px 0px #1a1c1e;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            font-family: 'Lexend', sans-serif; 
+            color: var(--stroke);
+        }
+
+        /* Navbar Berkarakter Tegas */
+        .navbar { 
+            background: var(--neo-yellow) !important; 
+            border-bottom: 4px solid var(--stroke);
+        }
+        .navbar-brand, .nav-link { 
+            color: var(--stroke) !important; 
+            font-weight: 800;
+        }
+        .nav-link.active { 
+            background: var(--stroke);
+            color: #fff !important;
+            border: 2px solid var(--stroke);
+            box-shadow: 2px 2px 0px var(--stroke);
+        }
+
+        /* Video Box / Scanner Frame */
+        .video-box { 
+            border-radius: 0px; 
+            overflow: hidden; 
+            border: 4px solid var(--stroke); 
+            box-shadow: var(--shadow-large); 
+            background: #000;
+            position: relative;
+        }
+
+        /* Label Status Scanner */
+        .status-scanner {
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            padding: 8px 18px;
+            border-radius: 0px; 
+            font-size: 0.85rem; 
+            font-weight: 800; 
+            z-index: 10;
+            border: 2px solid var(--stroke);
+            box-shadow: 2px 2px 0px var(--stroke);
+            text-transform: uppercase;
+        }
+
+        /* Card Log Riwayat */
+        .log-card { 
+            background: #ffffff;
+            border: 4px solid var(--stroke) !important;
+            border-radius: 0px !important; 
+            height: 550px; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: var(--shadow-large);
+        }
+        .table-container { flex-grow: 1; overflow-y: auto; }
+
+        /* Desain Tabel Kasar Kontras Berwarna Biru */
+        .table { color: var(--stroke); }
+        .table thead { border-bottom: 4px solid var(--stroke); }
+        .table thead th { 
+            background-color: var(--neo-blue) !important;
+            color: #ffffff !important; 
+            font-weight: 800; 
+            text-transform: uppercase;
+            border: none;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #fffdf5 !important;
+        }
+
+        /* Tombol Utama Bergaya Komik Pop */
+        .btn-neo {
+            background: #ffffff;
+            color: var(--stroke);
+            font-weight: 800;
+            border: 3px solid var(--stroke) !important;
+            border-radius: 0px !important;
+            box-shadow: var(--shadow-flat);
+            transition: all 0.1s ease;
+        }
+        .btn-neo:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--stroke);
+            background: #fdfdfd;
+        }
+        .btn-neo:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--stroke);
+        }
+        .btn-neo-primary { background: var(--neo-blue); color: white; }
+        .btn-neo-primary:hover { background: #1d4ed8; color: white; }
+        .btn-neo-danger { background: var(--neo-red); color: white; }
+        .btn-neo-danger:hover { background: #dc2626; color: white; }
+        .btn-neo-secondary { background: #9ca3af; color: white; }
+
+        /* Komponen Input */
+        .form-control {
+            border: 3px solid var(--stroke) !important;
+            border-radius: 0px !important;
+            font-weight: 600;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: var(--neo-blue) !important;
+        }
+
+        /* Modal Neobrutalism */
+        .modal-content {
+            border: 4px solid var(--stroke) !important;
+            border-radius: 0px !important;
+            background: var(--bg-main);
+            box-shadow: 12px 12px 0px var(--stroke);
+        }
+        .modal-body { background: #ffffff; border: 2px solid var(--stroke); margin: 15px; }
+
+        .badge-posisi {
+            background: var(--neo-orange);
+            color: #ffffff;
+            border: 2px solid var(--stroke);
+            font-weight: 800;
+            border-radius: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-light sticky-top mb-5 py-3">
+    <div class="container-fluid px-4 d-flex justify-content-between align-items-center flex-nowrap" style="overflow-x: auto; white-space: nowrap;">
+        <!-- Logo di sebelah kiri -->
+        <a class="navbar-brand fw-bold fs-4 flex-shrink-0 me-4" href="#"><i class="fas fa-coffee me-2"></i>COFFEE ID</a>
+        
+        <!-- Menu Navigasi di sebelah kanan yang otomatis menyesuaikan -->
+        <ul class="navbar-nav d-flex flex-row align-items-center gap-2 flex-shrink-0 mb-0">
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/' else '' }}" href="/">
+            <i class="fas fa-user-plus me-1"></i> Tambah
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/daftar_karyawan' else '' }}" href="/daftar_karyawan">
+            <i class="fas fa-users me-1"></i> Daftar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/scan' else '' }}" href="/scan">
+            <i class="fas fa-sign-in-alt me-1"></i> Scan Masuk
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/scan_keluar' else '' }}" href="/scan_keluar">
+            <i class="fas fa-sign-out-alt me-1"></i> Scan Keluar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 ms-2" href="/logout" style="background: #ef4444; color: #fff !important; border: 2px solid #1a1c1e; box-shadow: 2px 2px 0px #1a1c1e;">
+            <i class="fas fa-sign-out-alt me-1"></i> LOGOUT
+        </a>
+    </li>
+</ul>
+    </div>
+</nav>
+
+    <div class="container mb-5">
+        <div class="row g-5">
+            
+            <div class="col-lg-6">
+                <div class="video-box mb-4">
+                    <div id="scanStatus" class="status-scanner bg-secondary text-white">IDLE</div>
+                    <video id="webcam" width="100%" autoplay playsinline></video>
+                </div>
+                <div class="d-flex gap-3 mb-4">
+                    <button id="btnScan" class="btn btn-neo btn-neo-primary btn-lg w-100 py-3">
+                        <i class="fas fa-play me-2"></i>MULAI SCAN MASUK
+                    </button>
+                    <button class="btn btn-neo btn-lg px-4" data-bs-toggle="modal" data-bs-target="#manualModal">
+                        <i class="fas fa-keyboard"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card log-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-2 border-bottom border-3 border-dark pb-3">
+                        <h5 class="fw-bold m-0 text-uppercase" style="font-weight: 800;"><i class="fas fa-history me-2 text-primary"></i>Masuk Hari Ini</h5>
+                        <button onclick="refreshLog()" class="btn btn-neo btn-sm px-3"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="border-bottom border-3 border-dark">
+                                    <th class="py-2 ps-3">Karyawan</th>
+                                    <th class="py-2">Jam Masuk</th>
+                                    <th class="py-2 text-center">Info</th>
+                                    <th class="py-2 text-center pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logAbsen" class="fw-bold"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="infoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body p-4 text-center">
+                    <div class="d-flex justify-content-end mb-2">
+                        <button type="button" class="btn-close border border-2 border-dark bg-white rounded-0 p-2 opacity-100" data-bs-dismiss="modal"></button>
+                    </div>
+                    <img id="infoFoto" src="" class="border border-3 border-dark mb-3 shadow-sm" style="width: 150px; height: 150px; object-fit: cover; border-radius: 0px;">
+                    <h3 id="infoNama" class="fw-bold mb-1 text-uppercase" style="font-weight: 800;"></h3>
+                    <p id="infoPosisi" class="badge-posisi d-inline-block px-3 py-1 mt-1 fs-6"></p>
+                    <hr class="border-2 border-dark opacity-100 my-3">
+                    <p class="text-dark mb-0 fw-bold">ID KARYAWAN: <span id="infoID" class="badge bg-dark rounded-0 fs-6"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="manualModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body p-4 text-center">
+                    <div class="d-flex justify-content-end mb-2">
+                        <button type="button" class="btn-close border border-2 border-dark bg-white rounded-0 p-2 opacity-100" data-bs-dismiss="modal"></button>
+                    </div>
+                    <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold mb-3 text-uppercase" style="font-weight: 800;">Otoritas Masuk Manual</h5>
+                    <input type="text" id="man_id" class="form-control mb-3 text-center py-2 fs-5" placeholder="ID KARYAWAN">
+                    <input type="password" id="man_pass" class="form-control mb-4 text-center py-2 fs-5" placeholder="PASSWORD OWNER">
+                    <button onclick="prosesManual()" class="btn btn-neo btn-neo-primary btn-lg w-100 py-2 fw-bold">ABSEN SEKARANG</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const video = document.getElementById('webcam');
+        const btnScan = document.getElementById('btnScan');
+        const scanStatus = document.getElementById('scanStatus');
+        let isScanning = false;
+
+        navigator.mediaDevices.getUserMedia({ video: true }).then(s => video.srcObject = s);
+
+        btnScan.onclick = () => {
+            isScanning = !isScanning;
+            if (isScanning) {
+                btnScan.innerHTML = '<i class="fas fa-stop me-2"></i>BERHENTI SCAN';
+                btnScan.className = "btn btn-neo btn-neo-secondary btn-lg w-100 py-3";
+                scanStatus.innerText = "SCANNING IN...";
+                scanStatus.className = "status-scanner bg-primary text-white";
+                doScan();
+            } else {
+                btnScan.innerHTML = '<i class="fas fa-play me-2"></i>MULAI SCAN MASUK';
+                btnScan.className = "btn btn-neo btn-neo-primary btn-lg w-100 py-3";
+                scanStatus.innerText = "IDLE";
+                scanStatus.className = "status-scanner bg-secondary text-white";
+            }
+        }
+
+        async function doScan() {
+            if(!isScanning) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            try {
+                const response = await fetch('/proses_absen', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        image: canvas.toDataURL('image/jpeg'),
+                        tipe: 'masuk' 
+                    })
+                });
+                const res = await response.json();
+                
+                if(res.status === 'success') {
+                    scanStatus.innerText = "BERHASIL: " + res.nama.toUpperCase();
+                    scanStatus.className = "status-scanner bg-success text-white";
+                    
+                    refreshLog();
+
+                    setTimeout(() => {
+                        if(isScanning) {
+                            scanStatus.innerText = "SCANNING IN...";
+                            scanStatus.className = "status-scanner bg-primary text-white";
+                        }
+                    }, 2000);
+
+                } else if(res.status === 'already') {
+                    scanStatus.innerText = "SUDAH ABSEN MASUK";
+                    scanStatus.className = "status-scanner bg-warning text-dark";
+                } else if(res.status === 'unregistered' || res.status === 'failed') {
+                scanStatus.innerText = "KARYAWAN TIDAK TERDAFTAR";
+                scanStatus.className = "status-scanner bg-danger text-white";
+                
+                setTimeout(() => {
+                    if(isScanning) {
+                        scanStatus.innerText = "SCANNING IN...";
+                        scanStatus.className = "status-scanner bg-primary text-white";
+                    }
+                }, 2000);
+            }
+            } catch (err) { 
+                console.error(err); 
+            }
+
+            setTimeout(doScan, 3000);
+        }
+
+        function refreshLog() {
+            fetch('/get_recent_absen')
+            .then(r => r.json())
+            .then(data => {
+                const tableBody = document.getElementById('logAbsen');
+                tableBody.innerHTML = ""; 
+                
+                if(data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4 fw-bold">BELUM ADA ABSEN MASUK HARI INI</td></tr>';
+                } else {
+                    data.forEach(x => {
+                        let row = `<tr class="border-bottom border-dark">
+                            <td class="ps-3"><div class="fw-bold text-dark fs-6">${x.nama}</div><div class="small text-muted">ID: ${x.no_karyawan}</div></td>
+                            <td class="fw-bold text-primary fs-5">${x.jam_masuk}</td>
+                            <td class="text-center">
+                                <button onclick="lihatDataKaryawan('${x.no_karyawan}', '${x.nama}', '${x.posisi}')" class="btn btn-neo btn-sm px-2 py-1" style="background-color: var(--neo-blue); color: white;">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                            <td class="text-center pe-3">
+                                <button onclick="hapusAbsen(${x.id})" class="btn btn-neo btn-neo-danger btn-sm px-2 py-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            });
+        }
+
+        function hapusAbsen(id) {
+            if(confirm("Hapus data absen ini?")) {
+                fetch(`/hapus_absen/${id}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(res => {
+                    if(res.status === 'success') refreshLog();
+                });
+            }
+        }
+
+        function lihatDataKaryawan(id, nama, posisi) {
+            document.getElementById('infoNama').innerText = nama;
+            document.getElementById('infoPosisi').innerText = posisi.toUpperCase();
+            document.getElementById('infoID').innerText = id;
+            document.getElementById('infoFoto').src = `/static/uploads/karyawan/${id}/depan.jpg`;
+            new bootstrap.Modal(document.getElementById('infoModal')).show();
+        }
+
+        async function prosesManual() {
+            const res = await fetch('/absen_manual', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    no_karyawan: document.getElementById('man_id').value,
+                    password: document.getElementById('man_pass').value,
+                    tipe: 'masuk'
+                })
+            });
+            const data = await res.json();
+            alert(data.message);
+            if(data.status === 'success') {
+                refreshLog();
+                bootstrap.Modal.getInstance(document.getElementById('manualModal')).hide();
+                document.getElementById('man_id').value = '';
+                document.getElementById('man_pass').value = '';
+            }
+        }
+
+        refreshLog();
+    </script>
+</body>
+</html>

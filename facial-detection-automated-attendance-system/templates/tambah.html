@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Karyawan | Coffee ID</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Karakter Utama Neobrutalism */
+        :root {
+            --stroke: #1a1c1e;
+            --bg-main: #f4f1ea;
+            --neo-blue: #3b82f6;
+            --neo-green: #22c55e;
+            --neo-red: #ef4444;
+            --neo-yellow: #facc15;
+            --neo-orange: #f97316;
+            --shadow-flat: 4px 4px 0px #1a1c1e;
+            --shadow-large: 8px 8px 0px #1a1c1e;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            font-family: 'Lexend', sans-serif; 
+            color: var(--stroke);
+        }
+
+        /* Navbar Berkarakter Tegas */
+        .navbar { 
+            background: var(--neo-yellow) !important; 
+            border-bottom: 4px solid var(--stroke);
+        }
+        .navbar-brand, .nav-link { 
+            color: var(--stroke) !important; 
+            font-weight: 800;
+        }
+        .nav-link.active { 
+            background: var(--stroke);
+            color: #fff !important;
+            border: 2px solid var(--stroke);
+            box-shadow: 2px 2px 0px var(--stroke);
+        }
+
+        /* Card Form Registrasi */
+        .card { 
+            background: #ffffff;
+            border: 4px solid var(--stroke) !important; 
+            border-radius: 0px !important; 
+            box-shadow: var(--shadow-large);
+        }
+
+        /* Video Container / Camera Frame */
+        .video-container { 
+            position: relative; 
+            border-radius: 0px; 
+            overflow: hidden; 
+            background: #000; 
+            border: 4px solid var(--stroke); 
+            box-shadow: var(--shadow-large); 
+        }
+
+        /* Komponen Form */
+        .form-control, .form-select {
+            border: 3px solid var(--stroke) !important;
+            border-radius: 0px !important;
+            font-weight: 600;
+            color: var(--stroke);
+        }
+        .form-control:focus, .form-select:focus {
+            box-shadow: none;
+            border-color: var(--neo-blue) !important;
+        }
+
+        /* Tombol Utama Bergaya Komik Pop */
+        .btn-neo {
+            background: #ffffff;
+            color: var(--stroke);
+            font-weight: 800;
+            border: 3px solid var(--stroke) !important;
+            border-radius: 0px !important;
+            box-shadow: var(--shadow-flat);
+            transition: all 0.1s ease;
+        }
+        .btn-neo:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--stroke);
+            background: #fdfdfd;
+        }
+        .btn-neo:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--stroke);
+        }
+        .btn-neo:disabled {
+            background: #e9ecef;
+            color: #9ca3af;
+            border-color: #9ca3af !important;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        .btn-neo-primary { background: var(--neo-blue); color: white; }
+        .btn-neo-primary:hover:not(:disabled) { background: #1d4ed8; color: white; }
+        .btn-neo-warning { background: var(--neo-yellow); color: var(--stroke); }
+        .btn-neo-warning:hover:not(:disabled) { background: #eab308; color: var(--stroke); }
+
+        /* Hasil Foto Snippet Preview */
+        .captured-img { 
+            width: 85px; 
+            height: 85px; 
+            object-fit: cover; 
+            border-radius: 0px; 
+            margin: 8px; 
+            border: 3px solid var(--stroke); 
+            box-shadow: 2px 2px 0px var(--stroke);
+        }
+
+        /* Banner Instruksi Arah Wajah */
+        .instruction-banner {
+            border-top: 4px solid var(--stroke);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-light sticky-top mb-5 py-3">
+    <div class="container-fluid px-4 d-flex justify-content-between align-items-center flex-nowrap" style="overflow-x: auto; white-space: nowrap;">
+        <!-- Logo di sebelah kiri -->
+        <a class="navbar-brand fw-bold fs-4 flex-shrink-0 me-4" href="#"><i class="fas fa-coffee me-2"></i>COFFEE ID</a>
+        
+        <!-- Menu Navigasi di sebelah kanan yang otomatis menyesuaikan -->
+        <ul class="navbar-nav d-flex flex-row align-items-center gap-2 flex-shrink-0 mb-0">
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/' else '' }}" href="/">
+            <i class="fas fa-user-plus me-1"></i> Tambah
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/daftar_karyawan' else '' }}" href="/daftar_karyawan">
+            <i class="fas fa-users me-1"></i> Daftar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/scan' else '' }}" href="/scan">
+            <i class="fas fa-sign-in-alt me-1"></i> Scan Masuk
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 {{ 'active' if request.path == '/scan_keluar' else '' }}" href="/scan_keluar">
+            <i class="fas fa-sign-out-alt me-1"></i> Scan Keluar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-3 ms-2" href="/logout" style="background: #ef4444; color: #fff !important; border: 2px solid #1a1c1e; box-shadow: 2px 2px 0px #1a1c1e;">
+            <i class="fas fa-sign-out-alt me-1"></i> LOGOUT
+        </a>
+    </li>
+</ul>
+    </div>
+</nav>
+
+    <div class="container mb-5">
+        <div class="row g-5">
+            
+            <div class="col-lg-5">
+                <div class="card p-4">
+                    <h3 class="fw-bold mb-4 text-uppercase border-bottom border-3 border-dark pb-3" style="font-weight: 800;">Karyawan Baru</h3>
+                    <form id="formKaryawan">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark text-uppercase">Nomor Induk Karyawan</label>
+                            <input type="text" id="no_karyawan" class="form-control form-control-lg" placeholder="Contoh: 001" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark text-uppercase">Nama Lengkap</label>
+                            <input type="text" id="nama" class="form-control form-control-lg" placeholder="Masukkan nama" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-dark text-uppercase">Posisi Kerja</label>
+                            <select id="posisi" class="form-select form-select-lg" required>
+                                <option value="Barista">Barista</option>
+                                <option value="Waiter">Waiter</option>
+                                <option value="Kasir">Kasir</option>
+                                <option value="Kitchen Staff">Kitchen Staff</option>
+                                <option value="Cleaning Service">Cleaning Service</option>
+                                <option value="Supervisor">Supervisor</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn btn-neo btn-neo-primary w-100 py-3" disabled>
+                            <i class="fas fa-save me-2"></i>SIMPAN DATA KARYAWAN
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-7 text-center">
+                <div class="video-container mb-4">
+                    <video id="webcam" width="100%" autoplay playsinline></video>
+                    <div class="instruction-banner position-absolute bottom-0 start-0 w-100 p-3 bg-white text-dark border-top">
+                        <span id="instruction"><i class="fas fa-arrow-right me-2 text-warning"></i>Arahkan wajah ke <b>DEPAN</b></span>
+                    </div>
+                </div>
+                
+                <button id="captureBtn" class="btn btn-neo btn-neo-warning btn-lg px-5 py-3 mb-4 text-uppercase">
+                    <i class="fas fa-camera me-2"></i>Ambil Foto (<span id="count">0</span>/5)
+                </button>
+                
+                <div id="preview" class="d-flex justify-content-center flex-wrap p-2 bg-white border border-3 border-dark shadow-sm min-hidden"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const captureBtn = document.getElementById('captureBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const preview = document.getElementById('preview');
+        const instruction = document.getElementById('instruction');
+        
+        const positions = ['DEPAN', 'KIRI', 'KANAN', 'ATAS', 'BAWAH'];
+        let currentPos = 0;
+        let photos = {};
+
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => { video.srcObject = stream; });
+
+        captureBtn.addEventListener('click', () => {
+            if (currentPos < 5) {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const dataURL = canvas.toDataURL('image/jpeg');
+                photos[positions[currentPos]] = dataURL;
+                
+                const img = document.createElement('img');
+                img.src = dataURL; img.className = 'captured-img';
+                preview.appendChild(img);
+
+                currentPos++;
+                document.getElementById('count').innerText = currentPos;
+                
+                if (currentPos < 5) {
+                    instruction.innerHTML = `<i class="fas fa-arrow-right me-2 text-warning"></i>Arahkan wajah ke <b>${positions[currentPos]}</b>`;
+                } else {
+                    instruction.innerHTML = `<i class="fas fa-check-circle me-2 text-success"></i>FOTO LENGKAP! SIAP DISIMPAN.`;
+                    captureBtn.disabled = true;
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+
+        document.getElementById('formKaryawan').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>MEMPROSES...';
+            submitBtn.disabled = true;
+
+            fetch('/simpan_karyawan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    no_karyawan: document.getElementById('no_karyawan').value,
+                    nama: document.getElementById('nama').value,
+                    posisi: document.getElementById('posisi').value,
+                    photos: photos
+                })
+            }).then(r => r.json()).then(data => {
+                alert(data.message);
+                if(data.status === 'success') location.reload();
+                else { 
+                    submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>SIMPAN DATA KARYAWAN'; 
+                    submitBtn.disabled = false; 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
